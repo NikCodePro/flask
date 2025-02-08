@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Webcam Person Detection</title>
+    <style>
+      #video, #canvas {
+        display: block;
+        margin-top: 10px;
+      }
+      #canvas {
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Webcam Person Detection</h1>
+    <button id="startButton">Start Camera</button>
+    <button id="detectButton">Detect Person</button>
+
+    <video id="video" width="640" height="480" autoplay playsinline></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script>
+      const startButton = document.getElementById('startButton');
+      const detectButton = document.getElementById('detectButton');
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Start the webcam
+      startButton.addEventListener('click', () => {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(stream => {
+            video.srcObject = stream;
+          })
+          .catch(err => {
+            console.error(err);
+            alert('Could not access camera. Check permissions.');
+          });
+      });
+
+      // Detect Person
+      detectButton.addEventListener('click', async () => {
+        // Draw current video frame to canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Convert canvas content to a Blob
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            alert("Failed to capture frame from video.");
+            return;
+          }
+
+          const formData = new FormData();
+          // The server expects the key "image"
+          formData.append('image', blob, 'snapshot.jpg');
+
+          try {
+            // Adjust URL if your Flask server is at a different host/port
+            const response = await fetch('http://127.0.0.1:5000/detect_faces', {
+              method: 'POST',
+              body: formData
+            });
+
+            if (!response.ok) {
+              throw new Error(`Server returned ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Response from server:', data);
+
+            if (data.person_detected) {
+              alert('Person is present in the frame!');
+            } else {
+              alert('No person detected in the frame.');
+            }
+          } catch (error) {
+            console.error(error);
+            alert('Error contacting the server.');
+          }
+        }, 'image/jpeg');
+      });
+    </script>
+  </body>
+</html>
