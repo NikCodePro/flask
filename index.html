@@ -59,7 +59,7 @@
 
           try {
             // Adjust URL if your Flask server is at a different host/port
-            const response = await fetch('http://127.0.0.1:5000/detect_faces', {
+            const response = await fetch('https://flask-tlvz.onrender.com/detect_faces', {
               method: 'POST',
               body: formData
             });

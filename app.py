@@ -7,6 +7,9 @@ from detect_person import detect_person_in_image
 
 app = Flask(__name__)
 
+@app.route('/')
+def index():
+    return "Hello flask server..."
 
 @app.route('/detect_faces', methods=['POST'])
 def detect_faces():
