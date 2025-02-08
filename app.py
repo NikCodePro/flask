@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "Hello flask server..."
+    return "Hello flask server.."
 
 @app.route('/detect_faces', methods=['POST'])
 def detect_faces():
@@ -63,4 +63,4 @@ def _cors_response(data, status=200):
 
 if __name__ == '__main__':
     # Run the Flask server
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
