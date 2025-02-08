@@ -63,4 +63,4 @@ def _cors_response(data, status=200):
 
 if __name__ == '__main__':
     # Run the Flask server
-    app.run(port=5000, debug=True)
+    app.run(debug=True)
